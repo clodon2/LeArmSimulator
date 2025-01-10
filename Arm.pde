@@ -37,7 +37,6 @@ class mathFinder{
     float z = -z_child + parent.z;
     float[] final_pos = {x, y, z};
     
-    println(child.rotation[2], parent.rotation[2], child);
     return final_pos;
   }
   
@@ -50,7 +49,6 @@ class mathFinder{
     float z = -z_child + parent.z;
     float[] final_pos = {x, y, z};
     
-    println(child.rotation[2], parent.rotation[2], child);
     return final_pos;
   }
 }
@@ -231,6 +229,7 @@ class ArmPinchersBuilder{
 class Arm{
   float[] start_rotation = {0, 0, 0};
   float[] pl_rotation = {0, 0, 0};
+  float[] rotation_range = {500, 2500};
   // placeholder arm for pieces that don't need
   ArmPiece placeholder = new ArmPieceBuilder(pos_pl[0], pos_pl[1], pos_pl[2], size_pl, pl_rotation).build();
   // create pieces of arm
@@ -250,8 +249,16 @@ class Arm{
     }
   }
   
-  public void action(int servo_index, float angle) {
+  public boolean action(int servo_index, float value){
+    if (!(rotation_range[0] <= value && value <= rotation_range[1])){
+      println("invalid rotation, range is", rotation_range[0], "-", rotation_range[1]);
+      return false;
+    }
+    float median = (this.rotation_range[0] + this.rotation_range[1]) / 2;
+    float value_percent = (value - median) / (rotation_range[1] - median);
+    float angle = (PI / 4) * value_percent;
     this.pieces[servo_index].move(angle);
+    return true;
   }
   
 }

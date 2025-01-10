@@ -1,6 +1,7 @@
 public class CameraControl {
   final float MOVE_SPEED = 8;
   final float ROTATION_SPEED = 0.02;
+  boolean enabled = true;
   
   PApplet parent;
 
@@ -25,6 +26,9 @@ public class CameraControl {
   }
 
   public void keyControl() {
+    if (!this.enabled){
+      return;
+    }
     if ( !parent.keyPressed ) return;
 
     // Matrix that modifies the camera matrix
