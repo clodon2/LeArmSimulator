@@ -30,10 +30,11 @@ class mathFinder{
   
   public float[] getArmPiecePos(ArmPiece parent, ArmPiece child){
     float x_child = sin(child.total_rotation[2]) * (child.size[1] / 2) + sin(parent.total_rotation[2]) * (parent.size[1] / 2);
-    float y_child = parent.y - cos(child.total_rotation[2]) * (child.size[1] / 2) - cos(parent.total_rotation[2]) * (parent.size[1] / 2);
-    float z_child = sin(child.total_rotation[1]);
+    float y_child = - cos(child.total_rotation[2]) * (child.size[1] / 2) - cos(parent.total_rotation[2]) * (parent.size[1] / 2);
+    float z_child = sin(child.total_rotation[1]) * (x_child);
+    x_child *= cos(child.total_rotation[1]);
     float x = x_child + parent.x;
-    float y = y_child;
+    float y = y_child + parent.y;
     float z = -z_child + parent.z;
     float[] final_pos = {x, y, z};
     
@@ -41,13 +42,16 @@ class mathFinder{
   }
   
   public float[] getArmPinchersPos(ArmPiece parent, ArmPinchers child){
-    float x_child = sin(child.rotation[2]) * (child.size[1] / 2) + sin(parent.rotation[2]) * (parent.size[1] / 2);
-    float y_child = parent.y - cos(child.rotation[2]) * (child.size[1] / 2) - cos(parent.rotation[2]) * (parent.size[1] / 2);
-    float z_child = sin(child.rotation[1]) * (x_child);
+    float x_child = sin(child.total_rotation[2]) * (child.size[1] / 2) + sin(parent.total_rotation[2]) * (parent.size[1] / 2);
+    float y_child = - cos(child.total_rotation[2]) * (child.size[1] / 2) - cos(parent.total_rotation[2]) * (parent.size[1] / 2);
+    float z_child = sin(child.total_rotation[1]) * (x_child);
+    x_child *= cos(child.total_rotation[1]);
+    float x_difference = sin(parent.total_rotation[1]) * ((parent.size[2] / 2));
+    float z_difference = cos(parent.total_rotation[1]) * ((parent.size[2] / 2));
     float x = x_child + parent.x;
-    float y = y_child;
+    float y = y_child + parent.y;
     float z = -z_child + parent.z;
-    float[] final_pos = {x, y, z};
+    float[] final_pos = {x + x_difference, y, z + z_difference, x - x_difference, y, z - z_difference};
     
     return final_pos;
   }
@@ -168,7 +172,7 @@ class ArmPinchers extends ArmPiece{
     this.x = piece_pos[0];
     this.y = piece_pos[1];
     this.z = piece_pos[2];
-    translate(this.x, this.y, this.z + (this.parent.size[2] / 2) + (this.size[2] / 2));
+    translate(this.x, this.y, this.z);
     rotateX(this.total_rotation[0]);
     rotateY(this.total_rotation[1]);
     rotateZ(this.total_rotation[2]);
@@ -177,11 +181,11 @@ class ArmPinchers extends ArmPiece{
     popMatrix();
     
     pushMatrix();
-    this.x = piece_pos[0];
-    this.y = piece_pos[1];
-    this.z = piece_pos[2];
-    translate(this.x, this.y, this.z - (this.parent.size[2] / 2) - (this.size[2] / 2));
-    rotateX(this.total_rotation[0]);
+    this.x = piece_pos[3];
+    this.y = piece_pos[4];
+    this.z = piece_pos[5];
+    translate(this.x, this.y, this.z);
+    rotateX(-this.total_rotation[0]);
     rotateY(this.total_rotation[1]);
     rotateZ(this.total_rotation[2]);
     fill(100);
@@ -241,7 +245,7 @@ class Arm{
   ArmPiece s5_4 = new ArmPieceBuilder(pos_seg5_4[0], pos_seg5_4[1], pos_seg5_4[2], size_seg5_4, start_rotation).setParent(base).build();
   ArmPiece s4_3 = new ArmPieceBuilder(pos_seg4_3[0], pos_seg4_3[1], pos_seg4_3[2], size_seg4_3, start_rotation).setParent(s5_4).build();
   ArmPiece s3_2 = new ArmPieceBuilder(pos_seg3_2[0], pos_seg3_2[1], pos_seg3_2[2], size_seg3_2, start_rotation).setParent(s4_3).build();
-  ArmPiece s2_1 = new ArmPieceBuilder(pos_seg2_1[0], pos_seg2_1[1], pos_seg2_1[2], size_seg2_1, start_rotation).setParent(s3_2).build();
+  ArmPiece s2_1 = new ArmPieceBuilder(pos_seg2_1[0], pos_seg2_1[1], pos_seg2_1[2], size_seg2_1, start_rotation).setParent(s3_2).setRotationDir(1).build();
   ArmPiece seg1base = new ArmPieceBuilder(pos_seg1base[0], pos_seg1base[1], pos_seg1base[2], size_seg1base, start_rotation).setParent(s2_1).build();
   ArmPinchers seg1 = new ArmPinchersBuilder(pos_seg1[0], pos_seg1[1], pos_seg1[2], size_seg1, start_rotation).setParent(seg1base).setRotationDir(0).build();
   
