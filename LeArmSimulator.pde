@@ -14,16 +14,13 @@ ArrayList<TextBox> tb_list = new ArrayList<TextBox>();
 
 
 void setup() {
-  size(640,360,P3D);
+  size(1080,900,P3D);
   // font setup
   UIFont = createFont("Georgia", ui_font_size);
   textFont(UIFont);
   
   cam = new CameraControl(this);
   myArm = new Arm();
-  myArm.action(1, PI/7);
-  myArm.action(2, PI/10);
-  myArm.action(0, PI/10);
   
   // UI stuff
   // x y width height

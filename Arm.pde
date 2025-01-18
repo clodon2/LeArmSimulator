@@ -29,9 +29,9 @@ class mathFinder{
   }
   
   public float[] getArmPiecePos(ArmPiece parent, ArmPiece child){
-    float x_child = sin(child.rotation[2]) * (child.size[1] / 2) + sin(parent.rotation[2]) * (parent.size[1] / 2);
-    float y_child = parent.y - cos(child.rotation[2]) * (child.size[1] / 2) - cos(parent.rotation[2]) * (parent.size[1] / 2);
-    float z_child = sin(child.rotation[1]) * (x_child);
+    float x_child = sin(child.total_rotation[2]) * (child.size[1] / 2) + sin(parent.total_rotation[2]) * (parent.size[1] / 2);
+    float y_child = parent.y - cos(child.total_rotation[2]) * (child.size[1] / 2) - cos(parent.total_rotation[2]) * (parent.size[1] / 2);
+    float z_child = sin(child.total_rotation[1]);
     float x = x_child + parent.x;
     float y = y_child;
     float z = -z_child + parent.z;
@@ -60,6 +60,7 @@ class ArmPiece{
   float z = 0;
   float[] size = {10, 10, 10};
   float[] rotation = {0, 0, 0};
+  float[] total_rotation = {0 ,0, 0};
   float[] rotation_range = {500, 2500};
   ArmPiece parent;
   int rotation_dir = 2;
@@ -78,9 +79,9 @@ class ArmPiece{
   }
   
   public void drawPiece(){
-    if (this.parent.moved){
-      float[] r = {this.parent.rotation[0] + this.rotation[0], this.parent.rotation[1] + this.rotation[1], this.parent.rotation[2] + this.rotation[2]};
-      this.rotation = r;
+    if (this.parent.moved | this.moved){
+      float[] r = {this.parent.total_rotation[0] + this.rotation[0], this.parent.total_rotation[1] + this.rotation[1], this.parent.total_rotation[2] + this.rotation[2]};
+      this.total_rotation = r;
       this.moved = true;
       this.parent.moved = false;
     }
@@ -90,15 +91,19 @@ class ArmPiece{
     this.y = piece_pos[1];
     this.z = piece_pos[2]; //<>//
     translate(this.x, this.y, this.z);
-    rotateX(this.rotation[0]);
-    rotateY(this.rotation[1]);
-    rotateZ(this.rotation[2]);
+    rotateX(this.total_rotation[0]);
+    rotateY(this.total_rotation[1]);
+    rotateZ(this.total_rotation[2]);
     fill(100);
     box(this.size[0], this.size[1], this.size[2]);
     popMatrix();
   }
   
   public void move(float to_angle){
+    // don't bother moving if angle is the same
+    if (this.rotation[this.rotation_dir] == to_angle){
+      return;
+    }
     this.rotation[this.rotation_dir] = to_angle;
     this.moved = true;
   }
@@ -140,7 +145,6 @@ class ArmPieceBuilder{
 
 
 class ArmPinchers extends ArmPiece{
-  float[] move_rotation = {0, 0, 0};
   ArmPiece piece1;
   ArmPiece piece2;
 
@@ -151,13 +155,13 @@ class ArmPinchers extends ArmPiece{
   }
   
   public void drawPiece(){
-    if (this.parent.moved){
-      float[] r = {this.parent.rotation[0] + this.rotation[0], this.parent.rotation[1] + this.rotation[1], this.parent.rotation[2] + this.rotation[2]};
-      this.rotation = r;
+    if (this.parent.moved | this.moved){
+      float[] r = {this.parent.total_rotation[0] + this.rotation[0], this.parent.total_rotation[1] + this.rotation[1], this.parent.total_rotation[2] + this.rotation[2]};
+      this.total_rotation = r;
       this.moved = true;
       this.parent.moved = false;
-      this.piece1.rotation = r;
-      this.piece2.rotation = r;
+      this.piece1.total_rotation = r;
+      this.piece2.total_rotation = r;
     }
     float[] piece_pos = mf.getArmPinchersPos(this.parent, this);
     pushMatrix();
@@ -165,9 +169,9 @@ class ArmPinchers extends ArmPiece{
     this.y = piece_pos[1];
     this.z = piece_pos[2];
     translate(this.x, this.y, this.z + (this.parent.size[2] / 2) + (this.size[2] / 2));
-    rotateX(this.rotation[0]);
-    rotateY(this.rotation[1]);
-    rotateZ(this.rotation[2]);
+    rotateX(this.total_rotation[0]);
+    rotateY(this.total_rotation[1]);
+    rotateZ(this.total_rotation[2]);
     fill(100);
     box(this.size[0], this.size[1], this.size[2]);
     popMatrix();
@@ -177,16 +181,16 @@ class ArmPinchers extends ArmPiece{
     this.y = piece_pos[1];
     this.z = piece_pos[2];
     translate(this.x, this.y, this.z - (this.parent.size[2] / 2) - (this.size[2] / 2));
-    rotateX(this.rotation[0]);
-    rotateY(this.rotation[1]);
-    rotateZ(this.rotation[2]);
+    rotateX(this.total_rotation[0]);
+    rotateY(this.total_rotation[1]);
+    rotateZ(this.total_rotation[2]);
     fill(100);
     box(this.size[0], this.size[1], this.size[2]);
     popMatrix();
   }
   
   public void move(float to_angle){
-    this.move_rotation[this.rotation_dir] = to_angle;
+    this.rotation[this.rotation_dir] = to_angle;
     this.moved = true;
   }
 }
@@ -241,10 +245,10 @@ class Arm{
   ArmPiece seg1base = new ArmPieceBuilder(pos_seg1base[0], pos_seg1base[1], pos_seg1base[2], size_seg1base, start_rotation).setParent(s2_1).build();
   ArmPinchers seg1 = new ArmPinchersBuilder(pos_seg1[0], pos_seg1[1], pos_seg1[2], size_seg1, start_rotation).setParent(seg1base).setRotationDir(0).build();
   
-  ArmPiece[] pieces = {base, s5_4, s4_3, s3_2, s2_1, seg1base, seg1};
+  ArmPiece[] pieces = {base, s5_4, s4_3, s3_2, s2_1, seg1, seg1base};
   
   public void drawArm(){
-    for (ArmPiece piece : pieces){
+    for (ArmPiece piece : this.pieces){
       piece.drawPiece();
     }
   }
@@ -256,7 +260,7 @@ class Arm{
     }
     float median = (this.rotation_range[0] + this.rotation_range[1]) / 2;
     float value_percent = (value - median) / (rotation_range[1] - median);
-    float angle = (PI / 4) * value_percent;
+    float angle = (PI / 2) * value_percent;
     this.pieces[servo_index].move(angle);
     return true;
   }

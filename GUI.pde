@@ -132,7 +132,6 @@ class TextBox{
     else if ((48 <= key) && (key <= 57)){
       this.text = this.text + key;
     }
-    println(this.text, "check");
   }
   
   public void drawTextBox(){
