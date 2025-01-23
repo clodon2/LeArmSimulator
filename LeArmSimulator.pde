@@ -9,14 +9,14 @@ Arm myArm;
 
 //UI
 PFont UIFont;
-int ui_font_size = 16;
+int ui_font_size = 25;
 ArrayList<TextBox> tb_list = new ArrayList<TextBox>();
 
 
 void setup() {
-  size(1080,900,P3D);
+  size(1200,900,P3D);
   // font setup
-  UIFont = createFont("Georgia", ui_font_size);
+  UIFont = createFont("Consolas", ui_font_size);
   textFont(UIFont);
   
   cam = new CameraControl(this);
@@ -25,7 +25,7 @@ void setup() {
   // UI stuff
   // x y width height
   for (int i = 1; i <= 6; i++){
-    TextBox newServ = new TextBox(width - 50, height - (40 * i), 100, 20, ui_font_size);
+    TextBox newServ = new TextBox(width - 70, height - (50 * i), 100, 20, ui_font_size);
     tb_list.add(newServ);
   }
   /*
@@ -71,13 +71,14 @@ void UIDrawControl(){
   textAlign(LEFT);
   translate(-width/2.0, -height/2.0);
   hint(DISABLE_DEPTH_TEST);
+  fill(255);
   text("[UP],[DOWN] : Tilt up/down", 20, height - 20);
-  text("[LEFT],[RIGHT] : Pan left/right", 20, height - 40);
-  text("[w],[s] : Move forward/backward", 20, height - 60);
-  text("[a],[d] : Move left/right", 20, height - 80);
-  text("[e],[c] : Move up/down", 20, height - 100);
-  text("[h] to update arm", 20, height - 120);
-  text("Only Numbers 500-2500", width - 200, 20);
+  text("[LEFT],[RIGHT] : Pan left/right", 20, height - 50);
+  text("[w],[s] : Move forward/backward", 20, height - 80);
+  text("[a],[d] : Move left/right", 20, height - 110);
+  text("[e],[c] : Move up/down", 20, height - 140);
+  text("[h] to update arm", 20, height - 170);
+  text("Servo Limits: 500-2500", 10, 30);
   hint(ENABLE_DEPTH_TEST);
   popMatrix();
   

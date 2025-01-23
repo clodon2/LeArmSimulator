@@ -142,6 +142,7 @@ class TextBox{
     if (this.text.length() <= 0 ){
       return;
     }
+    this.h = (this.font_size / 4) + this.font_size;
     pushMatrix();
     resetMatrix();
     rectMode(CENTER);

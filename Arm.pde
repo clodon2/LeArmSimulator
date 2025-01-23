@@ -263,7 +263,7 @@ class Arm{
       return false;
     }
     float median = (this.rotation_range[0] + this.rotation_range[1]) / 2;
-    float value_percent = (value - median) / (rotation_range[1] - median);
+    float value_percent = (median - value) / (rotation_range[1] - median);
     float angle = (PI / 2) * value_percent;
     this.pieces[servo_index].move(angle);
     return true;
